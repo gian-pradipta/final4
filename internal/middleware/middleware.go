@@ -12,6 +12,11 @@ import (
 func Authenticate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
+    if authHeader == "" {
+      
+			c.AbortWithStatusJSON(http.StatusUnauthorized, errorhandler.NewHttpError("unauthorized access", http.StatusUnauthorized))
+      return
+    }
 		t := strings.Split(authHeader, " ")
 		var authToken string
 		if len(t) == 2 {
