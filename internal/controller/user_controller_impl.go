@@ -95,7 +95,7 @@ func (u *user) TopUp(c *gin.Context) {
 	var errCode int = http.StatusUnauthorized
 	var user dto.UpdateBalanceRequest
 	var response dto.OnelineResponse
-	response.Message = "Your Balance Has Been Successfully Updated"
+
 	s := u.s
 	v := validator.New()
 	email, group, err := GetAuthorizedInformation(c)
@@ -119,7 +119,7 @@ func (u *user) TopUp(c *gin.Context) {
 		errCode = http.StatusBadRequest
 		goto ERROR_HANDLING
 	}
-
+	response.Message = fmt.Sprintf("Your Balance Has Been Successfully Updated to %d", user.Balance)
 ERROR_HANDLING:
 	if err != nil {
 		var httpError dto.HttpError
