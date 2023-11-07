@@ -34,3 +34,12 @@ func (u *user) Login(newUser dto.LoginUserRequest) error {
 	err = r.Login(entity)
 	return err
 }
+
+func (u *user) TopUp(user dto.UpdateBalanceRequest) error {
+	var err error
+
+	r := u.repo
+	entity := switchtype.FromUpdateBalanceRequestToEntityUser(user)
+	err = r.TopUp(entity)
+	return err
+}

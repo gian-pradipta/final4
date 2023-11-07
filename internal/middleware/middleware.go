@@ -29,11 +29,12 @@ func Authenticate() gin.HandlerFunc {
 			return
 		}
 		c.Set("group", data.Group)
+		c.Set("email", data.Email)
 		c.Next()
 	}
 }
 
-func Authorize() gin.HandlerFunc {
+func AuthorizeAdmin() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		group, exist := c.Get("group")

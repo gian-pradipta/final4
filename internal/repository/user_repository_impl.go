@@ -45,15 +45,10 @@ func (u *user) Login(newUser entity.User) error {
 	return err
 }
 
-// func (u *user) Update(newUser entity.User) error {
-// 	var err error
-// 	db := u.db
-// 	query := `
-// 		UPDATE users SET email = ?,
-// 		username = ?,
-// 		updated_at = ?
-// 		WHERE email = ?
-// 	`
-// 	_, err = db.Exec(query, newUser.Email, newUser.Username, time.Now())
-// 	return err
-// }
+func (u *user) TopUp(user entity.User) error {
+	var err error
+	db := u.db
+
+	_, err = db.Exec("UPDATE users SET balance = ? WHERE email = ?", user.Balance, user.Email)
+	return err
+}

@@ -21,3 +21,9 @@ func FromLoginUserRequestToEntityUser(dtoUser dto.LoginUserRequest) entity.User 
 	user.Balance = 20
 	return user
 }
+
+func FromUpdateBalanceRequestToEntityUser(dtoUser dto.UpdateBalanceRequest) entity.User {
+	var user entity.User
+	user.Balance = dtoUser.Balance
+	return user
+}
