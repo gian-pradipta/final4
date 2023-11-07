@@ -10,6 +10,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 func main() {
@@ -20,10 +21,12 @@ func main() {
 	}
 	userRepo := repository.NewUserRepository(db)
 	userService := service.NewUser(userRepo)
-	userController := controller.NewUserController(userService)
+	v := validator.New()
+	userController := controller.NewUserController(userService, v)
 
 	router.POST("users/register", userController.Create)
 	router.POST("users/login", userController.Login)
+	router.PATCH("users/topup", middleware.Authenticate(), userController.TopUp)
 	router.GET("users/login", middleware.Authenticate(), func(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusAccepted)
 	})

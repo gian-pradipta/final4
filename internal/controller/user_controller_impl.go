@@ -5,6 +5,7 @@ import (
 	"final2/internal/helper/errorhandler"
 	jwthelper "final2/internal/helper/jwt_helper"
 	"final2/internal/service"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,9 +14,10 @@ import (
 
 type user struct {
 	s service.User
+	v *validator.Validate
 }
 
-func NewUserController(s service.User) User {
+func NewUserController(s service.User, v *validator.Validate) User {
 	var u user
 	u.s = s
 	return &u
@@ -58,6 +60,7 @@ func (u *user) Login(c *gin.Context) {
 	var newUser dto.LoginUserRequest
 	var token string
 	validate := validator.New()
+
 	err = c.ShouldBindJSON(&newUser)
 	if err != nil {
 		goto ERROR_HANDLING
@@ -66,11 +69,12 @@ func (u *user) Login(c *gin.Context) {
 	if err != nil {
 		goto ERROR_HANDLING
 	}
+
 	err = u.s.Login(newUser)
 	if err != nil {
 		goto ERROR_HANDLING
 	}
-  token, err = jwthelper.GenerateJWT(newUser.Email)
+	token, err = jwthelper.GenerateJWT(newUser.Email)
 	if err != nil {
 		goto ERROR_HANDLING
 	}
@@ -83,5 +87,46 @@ ERROR_HANDLING:
 		return
 	}
 	response.Token = token
+	c.AbortWithStatusJSON(http.StatusOK, response)
+}
+
+func (u *user) TopUp(c *gin.Context) {
+	var err error
+	var errCode int = http.StatusUnauthorized
+	var user dto.UpdateBalanceRequest
+	var response dto.OnelineResponse
+	response.Message = "Your Balance Has Been Successfully Updated"
+	s := u.s
+	v := validator.New()
+	email, group, err := GetAuthorizedInformation(c)
+	if err != nil {
+		goto ERROR_HANDLING
+	}
+	err = c.ShouldBindJSON(&user)
+
+	if err != nil {
+		errCode = http.StatusBadRequest
+		goto ERROR_HANDLING
+	}
+	err = v.Struct(&user)
+	fmt.Println("11")
+	if err != nil {
+		errCode = http.StatusBadRequest
+		goto ERROR_HANDLING
+	}
+	err = s.TopUp(user, email, group)
+	if err != nil {
+		errCode = http.StatusBadRequest
+		goto ERROR_HANDLING
+	}
+
+ERROR_HANDLING:
+	if err != nil {
+		var httpError dto.HttpError
+		httpError.Code = errCode
+		httpError.Err = err.Error()
+		c.AbortWithStatusJSON(http.StatusBadRequest, httpError)
+		return
+	}
 	c.AbortWithStatusJSON(http.StatusOK, response)
 }

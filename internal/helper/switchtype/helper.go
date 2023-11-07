@@ -22,8 +22,10 @@ func FromLoginUserRequestToEntityUser(dtoUser dto.LoginUserRequest) entity.User 
 	return user
 }
 
-func FromUpdateBalanceRequestToEntityUser(dtoUser dto.UpdateBalanceRequest) entity.User {
+func FromUpdateBalanceRequestToEntityUser(dtoUser dto.UpdateBalanceRequest, email string, group string) entity.User {
 	var user entity.User
 	user.Balance = dtoUser.Balance
+	user.Email = email
+	user.Role = group
 	return user
 }
