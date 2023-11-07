@@ -70,7 +70,7 @@ func (u *user) Login(c *gin.Context) {
 	if err != nil {
 		goto ERROR_HANDLING
 	}
-	token, err = jwthelper.GenerateJWT(newUser.Email)
+  token, err = jwthelper.GenerateJWT(newUser.Email)
 	if err != nil {
 		goto ERROR_HANDLING
 	}

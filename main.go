@@ -13,7 +13,6 @@ import (
 )
 
 func main() {
-
 	router := gin.Default()
 	db, err := database.New()
 	if err != nil {

@@ -9,6 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+
+
 func Authenticate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
@@ -33,7 +35,33 @@ func Authenticate() gin.HandlerFunc {
 }
 
 func Authorize() gin.HandlerFunc {
+  
 	return func(c *gin.Context) {
-		c.Next()
+		
+		authHeader := c.Request.Header.Get("Authorization")
+    if authHeader == "" {
+      
+			c.AbortWithStatusJSON(http.StatusUnauthorized, errorhandler.NewHttpError("unauthorized access", http.StatusUnauthorized))
+      return
+    }
+		t := strings.Split(authHeader, " ")
+		var authToken string
+		if len(t) == 2 {
+			authToken = t[1]
+		}
+
+		data, err := jwthelper.ParseJWT(authToken)
+    if err != nil {
+      
+			c.AbortWithStatusJSON(http.StatusUnauthorized, errorhandler.NewHttpError(err.Error(), http.StatusUnauthorized))
+			return
+    }
+    if data.Group != "admin" {
+      c.AbortWithStatusJSON(http.StatusUnauthorized, errorhandler.NewHttpError("unauthorized", http.StatusUnauthorized))
+      return
+    } 
+    c.Next()
 	}
 }
+
+
