@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"final2/internal/dto"
 	"final2/internal/helper/errorhandler"
 	jwthelper "final2/internal/helper/jwt_helper"
@@ -32,15 +33,18 @@ func (u *user) Create(c *gin.Context) {
 	validate := validator.New()
 	errCode = http.StatusBadRequest
 	if err != nil {
+		err = errors.New("Invalid JSON Body")
 		goto ERROR_HANDLING
 	}
 	err = validate.Struct(&newUser)
 	if err != nil {
+		err = errors.New("JSON Body violates one or more constraints")
 		goto ERROR_HANDLING
 	}
 
 	err = s.Create(newUser)
 	if err != nil {
+		err = errors.New("Data Duplication")
 		goto ERROR_HANDLING
 	}
 
@@ -56,6 +60,7 @@ ERROR_HANDLING:
 func (u *user) Login(c *gin.Context) {
 	var err error
 	var errCode int = http.StatusBadRequest
+	var errMessage string
 	var response dto.LoginUserResponse
 	var newUser dto.LoginUserRequest
 	var token string
@@ -64,27 +69,28 @@ func (u *user) Login(c *gin.Context) {
 
 	err = c.ShouldBindJSON(&newUser)
 	if err != nil {
+		errMessage = "Invalid JSON Request"
 		goto ERROR_HANDLING
 	}
 	err = validate.Struct(&newUser)
 	if err != nil {
+		errMessage = "Invalid JSON Request"
 		goto ERROR_HANDLING
 	}
 
 	group, err = u.s.Login(newUser)
 	if err != nil {
+		errMessage = "Bad request"
 		goto ERROR_HANDLING
 	}
 	token, err = jwthelper.GenerateJWT(newUser.Email, group)
 	if err != nil {
+		errMessage = "Bad request"
 		goto ERROR_HANDLING
 	}
 ERROR_HANDLING:
 	if err != nil {
-		var httpError dto.HttpError
-		httpError.Code = errCode
-		httpError.Err = err.Error()
-		c.AbortWithStatusJSON(http.StatusBadRequest, httpError)
+		c.AbortWithStatusJSON(http.StatusBadRequest, errorhandler.NewHttpError(errMessage, errCode))
 		return
 	}
 	response.Token = token

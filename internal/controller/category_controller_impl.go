@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"final2/internal/dto"
 	"final2/internal/helper/errorhandler"
 	"final2/internal/service"
@@ -31,14 +32,17 @@ func (c *category) Create(ctx *gin.Context) {
 	var response dto.CreateCategoryResponse
 	err = ctx.ShouldBindJSON(&newCategory)
 	if err != nil {
+		err = errors.New("Invalid JSON Request")
 		goto ERROR_HANDLING
 	}
 	latestId, err = s.Create(newCategory)
 	if err != nil {
+		err = errors.New("Invalid JSON Request")
 		goto ERROR_HANDLING
 	}
 	response, err = s.Get(latestId)
 	if err != nil {
+		err = errors.New("Invalid JSON Request")
 		goto ERROR_HANDLING
 	}
 

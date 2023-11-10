@@ -25,9 +25,9 @@ func Authenticate() gin.HandlerFunc {
 		}
 
 		data, err := jwthelper.ParseJWT(authToken)
-		fmt.Println(data)
+
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, errorhandler.NewHttpError(err.Error(), http.StatusUnauthorized))
+			c.AbortWithStatusJSON(http.StatusUnauthorized, errorhandler.NewHttpError("unauthorized access", http.StatusUnauthorized))
 			return
 		}
 		c.Set("group", data.Group)
