@@ -37,7 +37,7 @@ func (c *category) Create(ctx *gin.Context) {
 	}
 	latestId, err = s.Create(newCategory)
 	if err != nil {
-		err = errors.New("Invalid JSON Request")
+		err = errors.New("Type already Exist")
 		goto ERROR_HANDLING
 	}
 	response, err = s.Get(latestId)
