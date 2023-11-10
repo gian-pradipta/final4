@@ -29,20 +29,21 @@ func (u *user) Create(newUser entity.User) error {
 	return err
 }
 
-func (u *user) Login(newUser entity.User) error {
+func (u *user) Login(newUser entity.User) (string, error) {
 	var err error
+	var group string
 	db := u.db
 
 	var hashedPwd string
-	rows := db.QueryRow("SELECT password FROM users WHERE email = ?", newUser.Email)
-	err = rows.Scan(&hashedPwd)
+	rows := db.QueryRow("SELECT password, role FROM users WHERE email = ?", newUser.Email)
+	err = rows.Scan(&hashedPwd, &group)
 	if err != nil {
 		err = errors.New("Incorrect email or password")
-		return err
+		return group, err
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(hashedPwd), []byte(newUser.Password))
 
-	return err
+	return group, err
 }
 
 func (u *user) TopUp(user entity.User) error {

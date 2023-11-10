@@ -3,6 +3,7 @@ package middleware
 import (
 	"final2/internal/helper/errorhandler"
 	jwthelper "final2/internal/helper/jwt_helper"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -24,6 +25,7 @@ func Authenticate() gin.HandlerFunc {
 		}
 
 		data, err := jwthelper.ParseJWT(authToken)
+		fmt.Println(data)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, errorhandler.NewHttpError(err.Error(), http.StatusUnauthorized))
 			return
@@ -38,7 +40,9 @@ func AuthorizeAdmin() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		group, exist := c.Get("group")
-		if !exist || group != "admin" {
+		groupString := group.(string)
+		fmt.Println(group)
+		if !exist || groupString != "admin" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, errorhandler.NewHttpError("unauthorized access", http.StatusUnauthorized))
 			return
 		}

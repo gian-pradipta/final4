@@ -7,6 +7,7 @@ import (
 	"final2/internal/repository"
 	"final2/internal/service"
 	"log"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -22,15 +23,19 @@ func main() {
 	userService := service.NewUser(userRepo)
 	v := validator.New()
 	userController := controller.NewUserController(userService, v)
+
+	categoryRepo := repository.NewCategory(db)
+	categoryService := service.NewCategory(categoryRepo)
+	categoryController := controller.NewCategory(categoryService, v)
 	// USER
 	router.POST("users/register", userController.Create)
 	router.POST("users/login", userController.Login)
 	router.PATCH("users/topup", middleware.Authenticate(), userController.TopUp)
-	// router.GET("users/login", middleware.Authenticate(), func(ctx *gin.Context) {
-	// 	ctx.AbortWithStatus(http.StatusAccepted)
-	// })
+	router.GET("users/login", middleware.Authenticate(), func(ctx *gin.Context) {
+		ctx.AbortWithStatus(http.StatusAccepted)
+	})
 	// CATEGORY
-
+	router.POST("categories", middleware.Authenticate(), middleware.AuthorizeAdmin(), categoryController.Create)
 	router.Run(":8000")
 
 }

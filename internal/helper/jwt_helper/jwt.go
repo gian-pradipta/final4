@@ -13,7 +13,7 @@ var LOGIN_EXPIRATION_DURATION = time.Duration(1) * time.Hour
 var JWT_SIGNING_METHOD = jwt.SigningMethodHS256
 var JWT_SIGNATURE_KEY = []byte("the secret of kalimdor")
 
-func GenerateJWT(email string) (string, error) {
+func GenerateJWT(email string, group string) (string, error) {
 	var err error
 	var signedToken string
 	var newClaim UserClaims
@@ -23,6 +23,7 @@ func GenerateJWT(email string) (string, error) {
 		ExpiresAt: time.Now().Add(LOGIN_EXPIRATION_DURATION).Unix(),
 	}
 	newClaim.Email = email
+	newClaim.Group = group
 	newToken = jwt.NewWithClaims(JWT_SIGNING_METHOD, newClaim)
 	signedToken, err = newToken.SignedString(JWT_SIGNATURE_KEY)
 	if err != nil {

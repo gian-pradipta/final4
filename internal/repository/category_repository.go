@@ -5,5 +5,6 @@ import (
 )
 
 type Category interface {
-	Create(newCategory entity.Category) error
+	Create(newCategory entity.Category) (int, error)
+	Get(id int) (entity.Category, error)
 }

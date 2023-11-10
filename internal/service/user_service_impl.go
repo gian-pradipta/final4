@@ -26,13 +26,13 @@ func (u *user) Create(newUser dto.CreateUserRequest) error {
 	return err
 }
 
-func (u *user) Login(newUser dto.LoginUserRequest) error {
+func (u *user) Login(newUser dto.LoginUserRequest) (string, error) {
 	var err error
 
 	r := u.repo
 	entity := switchtype.FromLoginUserRequestToEntityUser(newUser)
-	err = r.Login(entity)
-	return err
+	group, err := r.Login(entity)
+	return group, err
 }
 
 func (u *user) TopUp(user dto.UpdateBalanceRequest, email string, group string) error {

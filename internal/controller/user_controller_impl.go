@@ -59,6 +59,7 @@ func (u *user) Login(c *gin.Context) {
 	var response dto.LoginUserResponse
 	var newUser dto.LoginUserRequest
 	var token string
+	var group string
 	validate := validator.New()
 
 	err = c.ShouldBindJSON(&newUser)
@@ -70,11 +71,11 @@ func (u *user) Login(c *gin.Context) {
 		goto ERROR_HANDLING
 	}
 
-	err = u.s.Login(newUser)
+	group, err = u.s.Login(newUser)
 	if err != nil {
 		goto ERROR_HANDLING
 	}
-	token, err = jwthelper.GenerateJWT(newUser.Email)
+	token, err = jwthelper.GenerateJWT(newUser.Email, group)
 	if err != nil {
 		goto ERROR_HANDLING
 	}
@@ -109,7 +110,7 @@ func (u *user) TopUp(c *gin.Context) {
 		goto ERROR_HANDLING
 	}
 	err = v.Struct(&user)
-	fmt.Println("11")
+
 	if err != nil {
 		errCode = http.StatusBadRequest
 		goto ERROR_HANDLING
