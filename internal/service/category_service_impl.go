@@ -71,3 +71,13 @@ func (c *category) GetAll() ([]dto.GetCategoriesResponse, error) {
 	}
 	return categories, err
 }
+
+func (c *category) Update(newCategory dto.CreateCategoryRequest, id int) (int, error) {
+	var err error
+	var entity entity.Category
+	r := c.repo
+
+	entity.Type = newCategory.Type
+	id, err = r.Update(entity, id)
+	return id, err
+}

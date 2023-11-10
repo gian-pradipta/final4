@@ -72,3 +72,40 @@ ERROR_HANDLING:
 	}
 	ctx.AbortWithStatusJSON(http.StatusOK, response)
 }
+
+func (c *category) Update(ctx *gin.Context) {
+	s := c.serv
+	var errCode int = http.StatusBadRequest
+	var err error
+	var latestId int
+	var newCategory dto.CreateCategoryRequest
+	var response dto.CreateCategoryResponse
+	var id int
+	err = ctx.ShouldBindJSON(&newCategory)
+	if err != nil {
+		err = errors.New("Invalid JSON Request")
+		goto ERROR_HANDLING
+	}
+	id, err = getID(ctx)
+	if err != nil {
+		err = errors.New("Invalid ID")
+	}
+	latestId, err = s.Update(newCategory, id)
+	if err != nil {
+		err = errors.New("Invalid JSON Request")
+		goto ERROR_HANDLING
+	}
+	response, err = s.Get(latestId)
+	if err != nil {
+		err = errors.New("Invalid JSON Request")
+		goto ERROR_HANDLING
+	}
+
+ERROR_HANDLING:
+	if err != nil {
+		httpError := errorhandler.NewHttpError(err.Error(), errCode)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, httpError)
+		return
+	}
+	ctx.AbortWithStatusJSON(http.StatusOK, response)
+}

@@ -34,6 +34,15 @@ func (c *category) Create(newCategory entity.Category) (int, error) {
 	return id, err
 }
 
+func (c *category) Update(newCategory entity.Category, id int) (int, error) {
+	var err error
+	db := c.db
+
+	_, err = db.Exec("UPDATE category SET type = ?, updated_at = ? WHERE id = ?", newCategory.Type, time.Now(), id)
+
+	return id, err
+}
+
 func (c *category) Get(id int) (entity.Category, error) {
 	db := c.db
 	var err error

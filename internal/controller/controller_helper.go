@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,4 +25,10 @@ func GetAuthorizedInformation(c *gin.Context) (string, string, error) {
 	email = eml.(string)
 	group = grp.(string)
 	return email, group, err
+}
+
+func getID(c *gin.Context) (int, error) {
+	ids := c.Param("id")
+	id, err := strconv.Atoi(ids)
+	return id, err
 }

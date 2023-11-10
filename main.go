@@ -37,6 +37,7 @@ func main() {
 	// CATEGORY
 	router.POST("categories", middleware.Authenticate(), middleware.AuthorizeAdmin(), categoryController.Create)
 	router.GET("categories", middleware.Authenticate(), categoryController.GetAll)
+	router.PATCH("categories/:id", middleware.Authenticate(), middleware.AuthorizeAdmin(), categoryController.Update)
 	router.Run(":8000")
 
 }
