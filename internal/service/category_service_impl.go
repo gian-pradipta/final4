@@ -81,3 +81,11 @@ func (c *category) Update(newCategory dto.CreateCategoryRequest, id int) (int, e
 	id, err = r.Update(entity, id)
 	return id, err
 }
+
+func (c *category) Delete(id int) error {
+	var err error
+	repo := c.repo
+
+	err = repo.Delete(id)
+	return err
+}

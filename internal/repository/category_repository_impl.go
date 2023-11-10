@@ -90,3 +90,11 @@ func (c *category) GetAll() ([]entity.CategoryWithProduct, error) {
 	}
 	return categories, err
 }
+
+func (c *category) Delete(id int) error {
+	var err error
+	db := c.db
+	_, err = db.Exec("DELETE FROM category WHERE id = ?", id)
+
+	return err
+}

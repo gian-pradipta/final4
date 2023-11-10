@@ -38,6 +38,7 @@ func main() {
 	router.POST("categories", middleware.Authenticate(), middleware.AuthorizeAdmin(), categoryController.Create)
 	router.GET("categories", middleware.Authenticate(), categoryController.GetAll)
 	router.PATCH("categories/:id", middleware.Authenticate(), middleware.AuthorizeAdmin(), categoryController.Update)
+	router.DELETE("categories/:id", middleware.Authenticate(), middleware.AuthorizeAdmin(), categoryController.Delete)
 	router.Run(":8000")
 
 }

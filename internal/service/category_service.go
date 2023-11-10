@@ -7,4 +7,5 @@ type Category interface {
 	Get(id int) (dto.CreateCategoryResponse, error)
 	GetAll() ([]dto.GetCategoriesResponse, error)
 	Update(newCategory dto.CreateCategoryRequest, id int) (int, error)
+	Delete(id int) error
 }

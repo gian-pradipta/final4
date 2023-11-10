@@ -109,3 +109,26 @@ ERROR_HANDLING:
 	}
 	ctx.AbortWithStatusJSON(http.StatusOK, response)
 }
+
+func (c *category) Delete(ctx *gin.Context) {
+	serv := c.serv
+	var response dto.OnelineResponse
+	response.Message = "Category Has Been Successfully Deleted"
+	var errCode int = http.StatusBadRequest
+	id, err := getID(ctx)
+	if err != nil {
+		err = errors.New("Bad Request")
+		goto ERROR_HANDLING
+	}
+	err = serv.Delete(id)
+	if err != nil {
+		goto ERROR_HANDLING
+	}
+ERROR_HANDLING:
+	if err != nil {
+		httpError := errorhandler.NewHttpError(err.Error(), errCode)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, httpError)
+		return
+	}
+	ctx.AbortWithStatusJSON(http.StatusOK, response)
+}

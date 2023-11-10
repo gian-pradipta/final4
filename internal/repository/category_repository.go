@@ -9,4 +9,5 @@ type Category interface {
 	Get(id int) (entity.Category, error)
 	GetAll() ([]entity.CategoryWithProduct, error)
 	Update(newCategory entity.Category, id int) (int, error)
+	Delete(id int) error
 }
