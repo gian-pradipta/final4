@@ -3,39 +3,43 @@ package repository
 import (
 	"database/sql"
 	"final2/internal/entity"
-
-	"github.com/go-playground/validator/v10"
+	"time"
 )
 
 type product struct {
 	db *sql.DB
-	v  *validator.Validate
 }
 
-func NewProduct(db *sql.DB, v *validator.Validate) Product {
+func NewProduct(db *sql.DB) Product {
 	var repo product
 	repo.db = db
-	repo.v = v
 	return &repo
 }
 
-func (p *product) GetByCategory(category string) ([]entity.Product, error) {
-	var products []entity.Product = make([]entity.Product, 1)
+func (p *product) GetByCategory(category int) ([]entity.Product, error) {
+	var products []entity.Product = make([]entity.Product, 0)
 	var err error
+	var updatedAt string
+	var createdAt string
 	db := p.db
 
-	rows, err := db.Query("SELECT * FROM product WHERE category = ?", category)
+	rows, err := db.Query("SELECT * FROM product WHERE category_id = ?", category)
 	if err != nil {
 		return products, err
 	}
 
 	for rows.Next() {
 		var product entity.Product
-		err = rows.Scan(&product.Id, &product.Title, &product.Price, &product.Stock, &product.CategoryId, &product.CreatedAt, &product.UpdatedAt)
+		err = rows.Scan(&product.Id, &product.Title, &product.Price, &product.Stock, &product.CategoryId, &createdAt, &updatedAt)
+		product.CreatedAt, err = time.Parse("2006-01-02 15:04:05.9999999-07:00", createdAt)
+		product.UpdatedAt, err = time.Parse("2006-01-02 15:04:05.9999999-07:00", updatedAt)
 		if err != nil {
 			return products, err
 		}
-		products = append(products, product)
+		if product.Id != 0 {
+
+			products = append(products, product)
+		}
 	}
 	return products, err
 }

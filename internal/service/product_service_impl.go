@@ -10,7 +10,7 @@ type product struct {
 	repo repository.Product
 }
 
-func toDTO(entity entity.Product) dto.GetProductsResponse {
+func toGetProductResponse(entity entity.Product) dto.GetProductsResponse {
 	var product dto.GetProductsResponse
 	product.Id = entity.Id
 	product.Title = entity.Title
@@ -27,14 +27,14 @@ func NewProduct(repo repository.Product) Product {
 	return &p
 }
 
-func (p *product) GetByCategory(category string) ([]dto.GetProductsResponse, error) {
-	var products []dto.GetProductsResponse = make([]dto.GetProductsResponse, 1)
+func (p *product) GetByCategory(category int) ([]dto.GetProductsResponse, error) {
+	var products []dto.GetProductsResponse = make([]dto.GetProductsResponse, 0)
 	var err error
 	r := p.repo
 
 	entities, err := r.GetByCategory(category)
 	for _, entity := range entities {
-		product := toDTO(entity)
+		product := toGetProductResponse(entity)
 		products = append(products, product)
 	}
 	return products, err

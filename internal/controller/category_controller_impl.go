@@ -54,3 +54,21 @@ ERROR_HANDLING:
 	}
 	ctx.AbortWithStatusJSON(http.StatusCreated, response)
 }
+
+func (c *category) GetAll(ctx *gin.Context) {
+	s := c.serv
+	var errCode int = http.StatusBadRequest
+	var err error
+	var response []dto.GetCategoriesResponse
+	response, err = s.GetAll()
+	if err != nil {
+		goto ERROR_HANDLING
+	}
+ERROR_HANDLING:
+	if err != nil {
+		httpError := errorhandler.NewHttpError(err.Error(), errCode)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, httpError)
+		return
+	}
+	ctx.AbortWithStatusJSON(http.StatusOK, response)
+}

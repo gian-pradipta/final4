@@ -48,3 +48,36 @@ func (c *category) Get(id int) (entity.Category, error) {
 	return category, err
 
 }
+
+func (c *category) GetAll() ([]entity.CategoryWithProduct, error) {
+	var categories []entity.CategoryWithProduct
+	var err error
+	var updatedAt string
+	var createdAt string
+	db := c.db
+
+	rows, err := db.Query("SELECT * FROM category")
+	if err != nil {
+		return categories, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var category entity.CategoryWithProduct
+		err = rows.Scan(&category.Id, &category.Type, &category.SoldProductAmount, &createdAt, &updatedAt)
+		category.CreatedAt, err = time.Parse("2006-01-02 15:04:05.9999999-07:00", createdAt)
+		category.UpdatedAt, err = time.Parse("2006-01-02 15:04:05.9999999-07:00", updatedAt)
+		if err != nil {
+			return categories, err
+		}
+		categories = append(categories, category)
+	}
+	prepo := NewProduct(db)
+	for i := range categories {
+		products, err := prepo.GetByCategory(categories[i].Id)
+		if err != nil {
+			return categories, err
+		}
+		categories[i].Products = products
+	}
+	return categories, err
+}
