@@ -2,7 +2,7 @@ package dto
 
 import "time"
 
-type Products struct {
+type GetProductsResponse struct {
 	Id        int       `json:"id"`
 	Title     string    `json:"title"`
 	Price     int       `json:"price"`
