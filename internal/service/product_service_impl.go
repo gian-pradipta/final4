@@ -84,3 +84,18 @@ func (p *product) GetAll() ([]dto.GetProductsResponse, error) {
 
 	return products, err
 }
+
+func (p *product) Update(id int, product dto.CreateProductRequest) (int, error) {
+	var err error
+
+	entity := toEntity(product)
+	_, err = p.repo.Update(entity, id)
+	return id, err
+}
+
+func (p *product) Delete(id int) error {
+	var err error
+	err = p.repo.Delete(id)
+	return err
+
+}

@@ -47,6 +47,8 @@ func main() {
 	//PRODUCT
 	router.POST("products", middleware.Authenticate(), middleware.AuthorizeAdmin(), productController.Create)
 	router.GET("products", middleware.Authenticate(), productController.GetAll)
+	router.PUT("products/:id", middleware.Authenticate(), middleware.AuthorizeAdmin(), productController.Update)
+	router.DELETE("products/:id", middleware.Authenticate(), middleware.AuthorizeAdmin(), productController.Delete)
 	router.Run(":8000")
 
 }

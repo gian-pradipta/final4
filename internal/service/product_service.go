@@ -7,4 +7,6 @@ type Product interface {
 	Create(newProduct dto.CreateProductRequest) (int, error)
 	Get(id int) (dto.GetProductsResponse, error)
 	GetAll() ([]dto.GetProductsResponse, error)
+	Update(id int, product dto.CreateProductRequest) (int, error)
+	Delete(id int) error
 }

@@ -7,4 +7,6 @@ type Product interface {
 	Create(newProduct entity.Product) (int, error)
 	Get(id int) (entity.Product, error)
 	GetAll() ([]entity.Product, error)
+	Update(newProduct entity.Product, id int) (int, error)
+	Delete(id int) error
 }
