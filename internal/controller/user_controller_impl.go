@@ -105,7 +105,7 @@ func (u *user) TopUp(c *gin.Context) {
 
 	s := u.s
 	v := validator.New()
-	email, group, err := GetAuthorizedInformation(c)
+	_, email, group, err := GetAuthorizedInformation(c)
 	if err != nil {
 		goto ERROR_HANDLING
 	}

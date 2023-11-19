@@ -32,6 +32,7 @@ func Authenticate() gin.HandlerFunc {
 		}
 		c.Set("group", data.Group)
 		c.Set("email", data.Email)
+		c.Set("userId", data.Id)
 		c.Next()
 	}
 }

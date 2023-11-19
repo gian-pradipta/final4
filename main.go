@@ -31,6 +31,10 @@ func main() {
 	productRepo := repository.NewProduct(db)
 	productService := service.NewProduct(productRepo)
 	productController := controller.NewProduct(productService, v)
+
+	transactionRepo := repository.NewTransaction(db)
+	transactionService := service.NewTransaction(transactionRepo)
+	transactionController := controller.NewTransaction(transactionService, v)
 	// USER
 	router.POST("users/register", userController.Create)
 	router.POST("users/login", userController.Login)
@@ -49,6 +53,10 @@ func main() {
 	router.GET("products", middleware.Authenticate(), productController.GetAll)
 	router.PUT("products/:id", middleware.Authenticate(), middleware.AuthorizeAdmin(), productController.Update)
 	router.DELETE("products/:id", middleware.Authenticate(), middleware.AuthorizeAdmin(), productController.Delete)
+
+	//TRANSACTION HISTORY
+	router.POST("transactions", middleware.Authenticate(), transactionController.Create)
+
 	router.Run(":8000")
 
 }

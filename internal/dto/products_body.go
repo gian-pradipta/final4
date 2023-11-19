@@ -3,12 +3,13 @@ package dto
 import "time"
 
 type GetProductsResponse struct {
-	Id        int       `json:"id"`
-	Title     string    `json:"title"`
-	Price     int       `json:"price"`
-	Stock     int       `json:"stock"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Id         int       `json:"id"`
+	Title      string    `json:"title"`
+	Price      int       `json:"price"`
+	Stock      int       `json:"stock"`
+	CategoryId int       `json:"category_id" validate:"required"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
 }
 
 type CreateProductRequest struct {

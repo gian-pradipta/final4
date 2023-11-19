@@ -2,7 +2,7 @@ package entity
 
 import "time"
 
-type Comment struct {
+type Transaction struct {
 	id         int
 	ProductId  int
 	UserId     int

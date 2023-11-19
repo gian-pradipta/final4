@@ -1,0 +1,60 @@
+package service
+
+import (
+	"errors"
+	"final2/internal/dto"
+	"final2/internal/entity"
+	"final2/internal/repository"
+	"time"
+)
+
+type transaction struct {
+	repo repository.Transaction
+}
+
+func NewTransaction(repo repository.Transaction) Transaction {
+	var t transaction
+	t.repo = repo
+	return &t
+}
+
+func validateTransaction(transaction entity.Transaction, product entity.Product, user entity.User) bool {
+	var valid bool = true
+	if product.Stock < transaction.Quantity {
+		return false
+	}
+	if product.Price*transaction.Quantity > user.Balance {
+		return false
+	}
+	return valid
+}
+
+func (t *transaction) Create(request dto.CreateTransactionRequest, userEmail string) (dto.CreateTransactionResponse, error) {
+
+	repo := t.repo
+	var err error
+	var response dto.CreateTransactionResponse
+	var transaction entity.Transaction
+	user, product, err := repo.GetUserProduct(userEmail, request.ProductId)
+
+	transaction.ProductId = request.ProductId
+	transaction.UserId = user.Id
+	transaction.Quantity = request.Quantity
+	transaction.TotalPrice = request.Quantity * product.Price
+	transaction.CreatedAt = time.Now()
+	transaction.UpdatedAt = time.Now()
+	// fmt.Println(transaction)
+	valid := validateTransaction(transaction, product, user)
+	if !valid {
+		err = errors.New("Invalid Transaction")
+		return response, err
+	}
+
+	err = t.repo.Create(transaction)
+	response.Message = "You have successfully purchased the product"
+	response.TransactionBill.ProductTitle = product.Title
+	response.TransactionBill.Quantity = transaction.Quantity
+	response.TransactionBill.TotalPrice = transaction.TotalPrice
+
+	return response, err
+}

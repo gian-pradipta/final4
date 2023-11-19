@@ -26,6 +26,7 @@ func toGetProductResponse(entity entity.Product) dto.GetProductsResponse {
 	product.Title = entity.Title
 	product.Price = entity.Price
 	product.Stock = entity.Stock
+	product.CategoryId = entity.CategoryId
 	product.CreatedAt = entity.CreatedAt
 	product.UpdatedAt = entity.UpdatedAt
 	return product

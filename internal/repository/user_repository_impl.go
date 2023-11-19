@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"final2/internal/entity"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -52,4 +53,20 @@ func (u *user) TopUp(user entity.User) error {
 
 	_, err = db.Exec("UPDATE users SET balance = ? WHERE email = ?", user.Balance, user.Email)
 	return err
+}
+
+func (u *user) Get(id int) (entity.User, error) {
+	var usr entity.User
+	var err error
+	var updatedAt string
+	var createdAt string
+
+	rows := u.db.QueryRow("SELECT * FROM users WHERE id = ?", id)
+	err = rows.Scan(&usr.Id, &usr.Fullname, &usr.Email, &usr.Password, &usr.Role, &usr.Balance, &createdAt, &updatedAt)
+	if err != nil {
+		return usr, err
+	}
+	usr.CreatedAt, err = time.Parse("2006-01-02 15:04:05.9999999-07:00", createdAt)
+	usr.UpdatedAt, err = time.Parse("2006-01-02 15:04:05.9999999-07:00", updatedAt)
+	return usr, err
 }
