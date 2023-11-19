@@ -35,6 +35,11 @@ func (c *category) Create(ctx *gin.Context) {
 		err = errors.New("Invalid JSON Request")
 		goto ERROR_HANDLING
 	}
+	err = c.v.Struct(&newCategory)
+	if err != nil {
+		err = errors.New("JSON Body violates one or more constraints")
+		goto ERROR_HANDLING
+	}
 	latestId, err = s.Create(newCategory)
 	if err != nil {
 		err = errors.New("Type already Exist")

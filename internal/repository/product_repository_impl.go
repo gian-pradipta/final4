@@ -43,3 +43,35 @@ func (p *product) GetByCategory(category int) ([]entity.Product, error) {
 	}
 	return products, err
 }
+
+func (p *product) Create(newProduct entity.Product) (int, error) {
+	var err error
+	var latestId int
+	db := p.db
+
+	result, err := db.Exec("INSERT INTO product (title, price, stock, category_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)", newProduct.Title, newProduct.Price, newProduct.Stock, newProduct.CategoryId, time.Now(), time.Now())
+	if err != nil {
+		return latestId, err
+	}
+	id64, err := result.LastInsertId()
+	if err != nil {
+		return latestId, err
+	}
+	latestId = int(id64)
+	return latestId, err
+}
+
+func (p *product) Get(id int) (entity.Product, error) {
+	var product entity.Product
+	db := p.db
+	var err error
+	var updatedAt string
+	var createdAt string
+	rows := db.QueryRow("SELECT * FROM product WHERE id = ?", id)
+
+	err = rows.Scan(&product.Id, &product.Title, &product.Price, &product.Stock, &product.CategoryId, &createdAt, &updatedAt)
+	product.CreatedAt, err = time.Parse("2006-01-02 15:04:05.9999999-07:00", createdAt)
+	product.UpdatedAt, err = time.Parse("2006-01-02 15:04:05.9999999-07:00", updatedAt)
+	return product, err
+
+}

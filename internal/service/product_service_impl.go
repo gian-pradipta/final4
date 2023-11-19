@@ -10,6 +10,15 @@ type product struct {
 	repo repository.Product
 }
 
+func toEntity(product dto.CreateProductRequest) entity.Product {
+	var entity entity.Product
+	entity.CategoryId = product.CategoryId
+	entity.Title = product.Title
+	entity.Price = product.Price
+	entity.Stock = product.Stock
+	return entity
+
+}
 func toGetProductResponse(entity entity.Product) dto.GetProductsResponse {
 	var product dto.GetProductsResponse
 	product.Id = entity.Id
@@ -38,4 +47,27 @@ func (p *product) GetByCategory(category int) ([]dto.GetProductsResponse, error)
 		products = append(products, product)
 	}
 	return products, err
+}
+
+func (p *product) Create(newProduct dto.CreateProductRequest) (int, error) {
+	var err error
+	entity := toEntity(newProduct)
+	id, err := p.repo.Create(entity)
+	return id, err
+}
+
+func (p *product) Get(id int) (dto.GetProductResponse, error) {
+	var err error
+	var entity entity.Product
+	var product dto.GetProductResponse
+	r := p.repo
+	entity, err = r.Get(id)
+	product.Id = entity.Id
+	product.Title = entity.Title
+	product.Price = entity.Price
+	product.Stock = entity.Stock
+	product.CategoryId = entity.CategoryId
+	product.CreatedAt = entity.CreatedAt
+
+	return product, err
 }

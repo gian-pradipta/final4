@@ -27,6 +27,10 @@ func main() {
 	categoryRepo := repository.NewCategory(db)
 	categoryService := service.NewCategory(categoryRepo)
 	categoryController := controller.NewCategory(categoryService, v)
+
+	productRepo := repository.NewProduct(db)
+	productService := service.NewProduct(productRepo)
+	productController := controller.NewProduct(productService, v)
 	// USER
 	router.POST("users/register", userController.Create)
 	router.POST("users/login", userController.Login)
@@ -39,6 +43,9 @@ func main() {
 	router.GET("categories", middleware.Authenticate(), categoryController.GetAll)
 	router.PATCH("categories/:id", middleware.Authenticate(), middleware.AuthorizeAdmin(), categoryController.Update)
 	router.DELETE("categories/:id", middleware.Authenticate(), middleware.AuthorizeAdmin(), categoryController.Delete)
+
+	//PRODUCT
+	router.POST("products", middleware.Authenticate(), middleware.AuthorizeAdmin(), productController.Create)
 	router.Run(":8000")
 
 }
