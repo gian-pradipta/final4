@@ -22,3 +22,13 @@ type GetTransactionResponse struct {
 	TotalPrice int `json:"total_price"`
 	Product    GetProductResponse
 }
+
+type GetAllTransactionResponse struct {
+	Id         int                `json:"id"`
+	ProductId  int                `json:"product_id"`
+	UserId     int                `json:"user_id"`
+	Quantity   int                `json:"quantity"`
+	TotalPrice int                `json:"total_price"`
+	Product    GetProductResponse `json:"product"`
+	User       GetUserResponse    `json:"user"`
+}

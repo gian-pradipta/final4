@@ -56,7 +56,8 @@ func main() {
 
 	//TRANSACTION HISTORY
 	router.POST("transactions", middleware.Authenticate(), transactionController.Create)
-
+	router.GET("transactions/my-transactions", middleware.Authenticate(), transactionController.GetMyTransactions)
+	router.GET("transactions/user-transactions", middleware.Authenticate(), middleware.AuthorizeAdmin(), transactionController.GetAllTransactions)
 	router.Run(":8000")
 
 }

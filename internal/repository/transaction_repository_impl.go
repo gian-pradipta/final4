@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"final2/internal/entity"
+	"time"
 )
 
 type transaction struct {
@@ -73,11 +74,12 @@ func (t *transaction) Create(transaction entity.Transaction) error {
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec(`UPDATE category SET sold_product_amount = sold_product_amount + ? WHERE id = ?`, transaction.Quantity, product.CategoryId)
+	_, err = db.Exec(`UPDATE category SET sold_product_amount = sold_product_amount + ?, updated_at = ? WHERE id = ?`, transaction.Quantity, time.Now(), product.CategoryId)
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec(`UPDATE users SET balance = balance - ? WHERE id = ?`, transaction.TotalPrice, transaction.UserId)
+	_, err = db.Exec(`UPDATE users SET balance = balance - ?, updated_at = ? WHERE id = ?`, transaction.TotalPrice, time.Now(), transaction.UserId)
+	_, err = db.Exec(`UPDATE product SET stock = stock - ?, updated_at = ? WHERE id = ?`, transaction.Quantity, time.Now(), transaction.ProductId)
 	return err
 }
 
@@ -99,4 +101,85 @@ func (t *transaction) GetUserProduct(userEmail string, productId int) (entity.Us
 	}
 	user, err = urepo.Get(userId)
 	return user, product, err
+}
+
+func getUserIdByEmail(db *sql.DB, email string) (int, error) {
+	var userId int
+	rows := db.QueryRow(`SELECT id FROM users WHERE email = ?`, email)
+	err := rows.Scan(&userId)
+	if err != nil {
+		return userId, err
+	}
+	return userId, err
+}
+
+func (t *transaction) GetMyTransactions(userEmail string) ([]entity.TransactionWithProduct, error) {
+	var err error
+	var myTransactions []entity.TransactionWithProduct
+
+	db := t.db
+	id, err := getUserIdByEmail(db, userEmail)
+	if err != nil {
+		return myTransactions, err
+	}
+
+	rows, err := db.Query(`SELECT * FROM transaction_history WHERE user_id = ?`, id)
+	if err != nil {
+		return myTransactions, err
+	}
+	defer rows.Close()
+	var lorem string
+	var ipsum string
+	for rows.Next() {
+		var transaction entity.TransactionWithProduct
+		err = rows.Scan(&transaction.Id, &transaction.ProductId, &transaction.UserId, &transaction.Quantity, &transaction.TotalPrice, &lorem, &ipsum)
+		if err != nil {
+			return myTransactions, err
+		}
+		myTransactions = append(myTransactions, transaction)
+	}
+	prepo := NewProduct(db)
+	for i := range myTransactions {
+		product, err := prepo.Get(myTransactions[i].ProductId)
+		if err != nil {
+			return myTransactions, err
+		}
+		myTransactions[i].Product = product
+	}
+	return myTransactions, err
+}
+
+func (t *transaction) GetAllTransactions() ([]entity.TransactionWithProductUser, error) {
+	var err error
+	var myTransactions []entity.TransactionWithProductUser
+
+	db := t.db
+	rows, err := db.Query(`SELECT * FROM transaction_history`)
+	if err != nil {
+		return myTransactions, err
+	}
+	defer rows.Close()
+	var lorem string
+	var ipsum string
+	for rows.Next() {
+		var transaction entity.TransactionWithProductUser
+		err = rows.Scan(&transaction.Id, &transaction.ProductId, &transaction.UserId, &transaction.Quantity, &transaction.TotalPrice, &lorem, &ipsum)
+		if err != nil {
+			return myTransactions, err
+		}
+		myTransactions = append(myTransactions, transaction)
+	}
+	prepo := NewProduct(db)
+	urepo := NewUserRepository(db)
+	for i := range myTransactions {
+		product, err := prepo.Get(myTransactions[i].ProductId)
+		user, err := urepo.Get(myTransactions[i].UserId)
+		if err != nil {
+			return myTransactions, err
+		}
+		myTransactions[i].Product = product
+		myTransactions[i].User = user
+
+	}
+	return myTransactions, err
 }

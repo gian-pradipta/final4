@@ -58,3 +58,80 @@ func (t *transaction) Create(request dto.CreateTransactionRequest, userEmail str
 
 	return response, err
 }
+
+func toGetMyTransactionsResponse(entities []entity.TransactionWithProduct) []dto.GetTransactionResponse {
+	// var response dto.GetTransactionResponse
+	var myTransactions []dto.GetTransactionResponse
+
+	for _, entity := range entities {
+		var t dto.GetTransactionResponse
+		t.Id = entity.Id
+		t.ProductId = entity.ProductId
+		t.UserId = entity.UserId
+		t.Quantity = entity.Quantity
+		t.TotalPrice = entity.TotalPrice
+		t.Product.Id = entity.Product.Id
+		t.Product.Title = entity.Product.Title
+		t.Product.Price = entity.Product.Price
+		t.Product.Stock = entity.Product.Stock
+		t.Product.CategoryId = entity.Product.CategoryId
+		t.Product.CreatedAt = entity.Product.CreatedAt
+		t.Product.UpdatedAt = entity.Product.UpdatedAt
+		myTransactions = append(myTransactions, t)
+	}
+	return myTransactions
+}
+
+func toGetAllTransactionsResponse(entities []entity.TransactionWithProductUser) []dto.GetAllTransactionResponse {
+	var myTransactions []dto.GetAllTransactionResponse
+
+	for _, entity := range entities {
+		var t dto.GetAllTransactionResponse
+		t.Id = entity.Id
+		t.ProductId = entity.ProductId
+		t.UserId = entity.UserId
+		t.Quantity = entity.Quantity
+		t.TotalPrice = entity.TotalPrice
+		t.Product.Id = entity.Product.Id
+		t.Product.Title = entity.Product.Title
+		t.Product.Price = entity.Product.Price
+		t.Product.Stock = entity.Product.Stock
+		t.Product.CategoryId = entity.Product.CategoryId
+		t.Product.CreatedAt = entity.Product.CreatedAt
+		t.Product.UpdatedAt = entity.Product.UpdatedAt
+		t.User.Id = entity.User.Id
+		t.User.Email = entity.User.Email
+		t.User.Fullname = entity.User.Fullname
+		t.User.Balance = entity.User.Balance
+		t.User.CreatedAt = entity.User.CreatedAt
+		t.User.UpdatedAt = entity.User.UpdatedAt
+		myTransactions = append(myTransactions, t)
+	}
+	return myTransactions
+}
+
+func (t *transaction) GetMyTransactions(email string) ([]dto.GetTransactionResponse, error) {
+	var myTransactions []dto.GetTransactionResponse
+	var err error
+	repo := t.repo
+	entities, err := repo.GetMyTransactions(email)
+	if err != nil {
+		return myTransactions, err
+	}
+	myTransactions = toGetMyTransactionsResponse(entities)
+
+	return myTransactions, err
+}
+
+func (t *transaction) GetAllTransactions() ([]dto.GetAllTransactionResponse, error) {
+	var transactions []dto.GetAllTransactionResponse
+	var err error
+	repo := t.repo
+
+	entities, err := repo.GetAllTransactions()
+	if err != nil {
+		return transactions, err
+	}
+	transactions = toGetAllTransactionsResponse(entities)
+	return transactions, err
+}

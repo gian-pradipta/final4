@@ -44,9 +44,50 @@ func (t *transaction) Create(ctx *gin.Context) {
 ERROR_HANDLING:
 	if err != nil {
 		httpError := errorhandler.NewHttpError(err.Error(), errCode)
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, httpError)
+		ctx.AbortWithStatusJSON(errCode, httpError)
+		return
+	}
+	ctx.AbortWithStatusJSON(http.StatusCreated, response)
+
+}
+
+func (t *transaction) GetMyTransactions(ctx *gin.Context) {
+	var err error
+	var errCode int = http.StatusBadRequest
+	var response []dto.GetTransactionResponse
+
+	_, email, _, err := GetAuthorizedInformation(ctx)
+	if err != nil {
+		goto ERROR_HANDLING
+	}
+	response, err = t.serv.GetMyTransactions(email)
+	if err != nil {
+		goto ERROR_HANDLING
+	}
+ERROR_HANDLING:
+	if err != nil {
+		httpError := errorhandler.NewHttpError(err.Error(), errCode)
+		ctx.AbortWithStatusJSON(errCode, httpError)
 		return
 	}
 	ctx.AbortWithStatusJSON(http.StatusOK, response)
+}
 
+func (t *transaction) GetAllTransactions(ctx *gin.Context) {
+	var err error
+	var errCode int = http.StatusBadRequest
+	var response []dto.GetAllTransactionResponse
+
+	response, err = t.serv.GetAllTransactions()
+	if err != nil {
+		goto ERROR_HANDLING
+	}
+
+ERROR_HANDLING:
+	if err != nil {
+		httpError := errorhandler.NewHttpError(err.Error(), errCode)
+		ctx.AbortWithStatusJSON(errCode, httpError)
+		return
+	}
+	ctx.AbortWithStatusJSON(http.StatusOK, response)
 }

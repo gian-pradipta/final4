@@ -35,4 +35,5 @@ type GetProductResponse struct {
 	Stock      int       `json:"stock" validate:"required,min=5"`
 	CategoryId int       `json:"category_id" validate:"required"`
 	CreatedAt  time.Time `json:"created_at" validate:"required"`
+	UpdatedAt  time.Time `json:"updated_at" validate:"required"`
 }
