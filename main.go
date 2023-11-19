@@ -46,6 +46,7 @@ func main() {
 
 	//PRODUCT
 	router.POST("products", middleware.Authenticate(), middleware.AuthorizeAdmin(), productController.Create)
+	router.GET("products", middleware.Authenticate(), productController.GetAll)
 	router.Run(":8000")
 
 }

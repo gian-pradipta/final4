@@ -26,7 +26,7 @@ func NewProduct(s service.Product, v *validator.Validate) Product {
 func (p *product) Create(ctx *gin.Context) {
 	var err error
 	var errCode int = http.StatusBadRequest
-	var response dto.GetProductResponse
+	var response dto.GetProductsResponse
 	var newProduct dto.CreateProductRequest
 	var id int
 	s := p.serv
@@ -59,4 +59,25 @@ ERROR_HANDLING:
 		return
 	}
 	ctx.AbortWithStatusJSON(http.StatusCreated, response)
+}
+
+func (p *product) GetAll(ctx *gin.Context) {
+	var response []dto.GetProductsResponse
+	var err error
+	var errCode int = http.StatusBadRequest
+	s := p.serv
+
+	response, err = s.GetAll()
+	if err != nil {
+		err = errors.New("Failed to get data")
+		goto ERROR_HANDLING
+	}
+
+ERROR_HANDLING:
+	if err != nil {
+		httpError := errorhandler.NewHttpError(err.Error(), errCode)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, httpError)
+		return
+	}
+	ctx.AbortWithStatusJSON(http.StatusOK, response)
 }

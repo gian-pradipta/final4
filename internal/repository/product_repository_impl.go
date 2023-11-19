@@ -75,3 +75,30 @@ func (p *product) Get(id int) (entity.Product, error) {
 	return product, err
 
 }
+
+func (p *product) GetAll() ([]entity.Product, error) {
+	var products []entity.Product
+	db := p.db
+	var err error
+	var updatedAt string
+	var createdAt string
+	rows, err := db.Query("SELECT * FROM product")
+	if err != nil {
+		return products, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var product entity.Product
+		err = rows.Scan(&product.Id, &product.Title, &product.Price, &product.Stock, &product.CategoryId, &createdAt, &updatedAt)
+		product.CreatedAt, err = time.Parse("2006-01-02 15:04:05.9999999-07:00", createdAt)
+		product.UpdatedAt, err = time.Parse("2006-01-02 15:04:05.9999999-07:00", updatedAt)
+		products = append(products, product)
+	}
+	return products, err
+}
+
+func (p *product) Update(newProduct entity.Product, id int) (int, error) {
+	var err error
+	_, err = p.db.Exec("UPDATE product SET title = ?, price = ?, stock = ?, category_id = ?, updated_at = ? WHERE id = ?", newProduct.Title, newProduct.Price, newProduct.Stock, newProduct.CategoryId, time.Now(), id)
+	return id, err
+}

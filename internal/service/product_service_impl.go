@@ -19,6 +19,7 @@ func toEntity(product dto.CreateProductRequest) entity.Product {
 	return entity
 
 }
+
 func toGetProductResponse(entity entity.Product) dto.GetProductsResponse {
 	var product dto.GetProductsResponse
 	product.Id = entity.Id
@@ -56,18 +57,30 @@ func (p *product) Create(newProduct dto.CreateProductRequest) (int, error) {
 	return id, err
 }
 
-func (p *product) Get(id int) (dto.GetProductResponse, error) {
+func (p *product) Get(id int) (dto.GetProductsResponse, error) {
 	var err error
 	var entity entity.Product
-	var product dto.GetProductResponse
+	var product dto.GetProductsResponse
 	r := p.repo
 	entity, err = r.Get(id)
-	product.Id = entity.Id
-	product.Title = entity.Title
-	product.Price = entity.Price
-	product.Stock = entity.Stock
-	product.CategoryId = entity.CategoryId
-	product.CreatedAt = entity.CreatedAt
+	product = toGetProductResponse(entity)
 
 	return product, err
+}
+
+func (p *product) GetAll() ([]dto.GetProductsResponse, error) {
+	var err error
+	var products []dto.GetProductsResponse
+	var entities []entity.Product
+	r := p.repo
+	entities, err = r.GetAll()
+	if err != nil {
+		return products, err
+	}
+	for _, entity := range entities {
+		product := toGetProductResponse(entity)
+		products = append(products, product)
+	}
+
+	return products, err
 }
