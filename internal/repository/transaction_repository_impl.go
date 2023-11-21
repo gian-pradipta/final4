@@ -124,6 +124,7 @@ func (t *transaction) GetMyTransactions(userEmail string) ([]entity.TransactionW
 	}
 
 	rows, err := db.Query(`SELECT * FROM transaction_history WHERE user_id = ?`, id)
+	// fmt.Println("Hello")
 	if err != nil {
 		return myTransactions, err
 	}

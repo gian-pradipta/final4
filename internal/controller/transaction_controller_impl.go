@@ -54,7 +54,7 @@ ERROR_HANDLING:
 func (t *transaction) GetMyTransactions(ctx *gin.Context) {
 	var err error
 	var errCode int = http.StatusBadRequest
-	var response []dto.GetTransactionResponse
+	var response []dto.GetTransactionResponse = make([]dto.GetTransactionResponse, 0)
 
 	_, email, _, err := GetAuthorizedInformation(ctx)
 	if err != nil {
@@ -62,6 +62,7 @@ func (t *transaction) GetMyTransactions(ctx *gin.Context) {
 	}
 	response, err = t.serv.GetMyTransactions(email)
 	if err != nil {
+		err = errors.New("User Not Found")
 		goto ERROR_HANDLING
 	}
 ERROR_HANDLING:
