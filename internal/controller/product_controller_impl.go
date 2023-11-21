@@ -38,7 +38,7 @@ func (p *product) Create(ctx *gin.Context) {
 
 	err = p.v.Struct(&newProduct)
 	if err != nil {
-		err = errors.New("JSON Body violates one or more constraints")
+		err = errors.New("Invalid JSON field value")
 		goto ERROR_HANDLING
 	}
 	id, err = s.Create(newProduct)
@@ -99,7 +99,7 @@ func (p *product) Update(ctx *gin.Context) {
 	}
 	err = p.v.Struct(&request)
 	if err != nil {
-		err = errors.New("JSON Body violates one or more constraints")
+		err = errors.New("Invalid JSON field value")
 		goto ERROR_HANDLING
 	}
 	_, err = p.serv.Update(id, request)

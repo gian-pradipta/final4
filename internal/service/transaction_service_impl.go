@@ -20,6 +20,7 @@ func NewTransaction(repo repository.Transaction) Transaction {
 
 func validateTransaction(transaction entity.Transaction, product entity.Product, user entity.User) bool {
 	var valid bool = true
+
 	if product.Stock < transaction.Quantity {
 		return false
 	}

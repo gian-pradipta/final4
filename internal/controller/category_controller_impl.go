@@ -37,7 +37,7 @@ func (c *category) Create(ctx *gin.Context) {
 	}
 	err = c.v.Struct(&newCategory)
 	if err != nil {
-		err = errors.New("JSON Body violates one or more constraints")
+		err = errors.New("Invalid JSON field value")
 		goto ERROR_HANDLING
 	}
 	latestId, err = s.Create(newCategory)
@@ -67,6 +67,7 @@ func (c *category) GetAll(ctx *gin.Context) {
 	var response []dto.GetCategoriesResponse
 	response, err = s.GetAll()
 	if err != nil {
+		err = errors.New("Failed to get data")
 		goto ERROR_HANDLING
 	}
 ERROR_HANDLING:
@@ -89,6 +90,11 @@ func (c *category) Update(ctx *gin.Context) {
 	err = ctx.ShouldBindJSON(&newCategory)
 	if err != nil {
 		err = errors.New("Invalid JSON Request")
+		goto ERROR_HANDLING
+	}
+	err = c.v.Struct(&newCategory)
+	if err != nil {
+		err = errors.New("Invalid JSON field value")
 		goto ERROR_HANDLING
 	}
 	id, err = getID(ctx)
@@ -122,7 +128,7 @@ func (c *category) Delete(ctx *gin.Context) {
 	var errCode int = http.StatusBadRequest
 	id, err := getID(ctx)
 	if err != nil {
-		err = errors.New("Bad Request")
+		err = errors.New("Invalid ID")
 		goto ERROR_HANDLING
 	}
 	err = serv.Delete(id)

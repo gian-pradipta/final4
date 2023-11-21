@@ -37,6 +37,7 @@ func (t *transaction) Create(ctx *gin.Context) {
 
 	err = t.v.Struct(&request)
 	if err != nil {
+		err = errors.New("Invalid JSON field value")
 		goto ERROR_HANDLING
 	}
 
@@ -81,6 +82,7 @@ func (t *transaction) GetAllTransactions(ctx *gin.Context) {
 
 	response, err = t.serv.GetAllTransactions()
 	if err != nil {
+		err = errors.New("Bad request")
 		goto ERROR_HANDLING
 	}
 

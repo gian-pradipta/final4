@@ -114,22 +114,26 @@ func (u *user) TopUp(c *gin.Context) {
 	v := validator.New()
 	_, email, group, err := GetAuthorizedInformation(c)
 	if err != nil {
+		err = errors.New("Bad request")
 		goto ERROR_HANDLING
 	}
 	err = c.ShouldBindJSON(&user)
 
 	if err != nil {
+		err = errors.New("Invalid JSON request")
 		errCode = http.StatusBadRequest
 		goto ERROR_HANDLING
 	}
 	err = v.Struct(&user)
 
 	if err != nil {
+		err = errors.New("Invalid JSON field value")
 		errCode = http.StatusBadRequest
 		goto ERROR_HANDLING
 	}
 	err = s.TopUp(user, email, group)
 	if err != nil {
+		err = errors.New("Failed to update user's balance")
 		errCode = http.StatusBadRequest
 		goto ERROR_HANDLING
 	}
