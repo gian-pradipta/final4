@@ -29,6 +29,8 @@ func (u *user) Create(c *gin.Context) {
 	var err error
 	var errCode int
 	var newUser dto.CreateUserRequest
+	var response dto.CreateUserResponse
+	var id int
 	err = c.ShouldBindJSON(&newUser)
 	validate := validator.New()
 	errCode = http.StatusBadRequest
@@ -41,20 +43,25 @@ func (u *user) Create(c *gin.Context) {
 		err = errors.New("JSON Body violates one or more constraints")
 		goto ERROR_HANDLING
 	}
-
-	err = s.Create(newUser)
+	id, err = s.Create(newUser)
+	// fmt.Println("Hello")
 	if err != nil {
 		err = errors.New("Data Duplication")
 		goto ERROR_HANDLING
 	}
 
+	response, err = s.GetCreateResponse(id)
+	if err != nil {
+		err = errors.New("Bad Request")
+		goto ERROR_HANDLING
+	}
+
 ERROR_HANDLING:
 	if err != nil {
-		httpError := errorhandler.NewHttpError(err.Error(), errCode)
-		c.AbortWithStatusJSON(http.StatusBadRequest, httpError)
+		c.AbortWithStatusJSON(http.StatusBadRequest, errorhandler.NewHttpError(err.Error(), errCode))
 		return
 	}
-	c.AbortWithStatus(http.StatusCreated)
+	c.AbortWithStatusJSON(http.StatusCreated, response)
 }
 
 func (u *user) Login(c *gin.Context) {
@@ -80,12 +87,12 @@ func (u *user) Login(c *gin.Context) {
 
 	group, err = u.s.Login(newUser)
 	if err != nil {
-		errMessage = "Bad request"
+		errMessage = "Login Failed"
 		goto ERROR_HANDLING
 	}
 	token, err = jwthelper.GenerateJWT(newUser.Email, group)
 	if err != nil {
-		errMessage = "Bad request"
+		errMessage = "Login Failed"
 		goto ERROR_HANDLING
 	}
 ERROR_HANDLING:

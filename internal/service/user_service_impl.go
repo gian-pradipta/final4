@@ -18,13 +18,13 @@ func NewUser(userRepo repository.User) User {
 	return &s
 }
 
-func (u *user) Create(newUser dto.CreateUserRequest) error {
+func (u *user) Create(newUser dto.CreateUserRequest) (int, error) {
 	r := u.repo
 	userEntity := switchtype.FromCreateUserRequestToUserEntity(newUser)
 	userEntity.CreatedAt = time.Now()
 	userEntity.UpdatedAt = time.Now()
-	err := r.Create(userEntity)
-	return err
+	id, err := r.Create(userEntity)
+	return id, err
 }
 
 func (u *user) Login(newUser dto.LoginUserRequest) (string, error) {
@@ -59,4 +59,19 @@ func toGetMyTransactiobResponse(entity entity.CategoryWithProduct) dto.GetCatego
 	}
 	response.Products = products
 	return response
+}
+
+func (u *user) GetCreateResponse(id int) (dto.CreateUserResponse, error) {
+	var err error
+	var user dto.CreateUserResponse
+	entity, err := u.repo.Get(id)
+	if err != nil {
+		return user, err
+	}
+	user.Balance = entity.Balance
+	user.CreatedAt = entity.CreatedAt
+	user.Fullname = entity.Fullname
+	user.Id = entity.Id
+	user.Email = entity.Email
+	return user, err
 }

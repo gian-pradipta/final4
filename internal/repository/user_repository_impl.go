@@ -19,15 +19,22 @@ func NewUserRepository(db *sql.DB) User {
 	return &r
 }
 
-func (u *user) Create(newUser entity.User) error {
+func (u *user) Create(newUser entity.User) (int, error) {
 	db := u.db
 	query := `
 				INSERT INTO users(fullname, email, password, role, balance, created_at, updated_at)
 				VALUES (?, ?, ?, ?, ?, ?, ?)
 			`
 	hashedPwd, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
-	_, err = db.Exec(query, newUser.Fullname, newUser.Email, hashedPwd, "customer", 0, newUser.CreatedAt, newUser.UpdatedAt)
-	return err
+	result, err := db.Exec(query, newUser.Fullname, newUser.Email, hashedPwd, "customer", 0, newUser.CreatedAt, newUser.UpdatedAt)
+	if err != nil {
+		return 0, err
+	}
+	id64, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return int(id64), err
 }
 
 func (u *user) Login(newUser entity.User) (string, error) {
