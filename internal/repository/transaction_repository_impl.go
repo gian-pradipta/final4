@@ -115,7 +115,7 @@ func getUserIdByEmail(db *sql.DB, email string) (int, error) {
 
 func (t *transaction) GetMyTransactions(userEmail string) ([]entity.TransactionWithProduct, error) {
 	var err error
-	var myTransactions []entity.TransactionWithProduct
+	var myTransactions []entity.TransactionWithProduct = make([]entity.TransactionWithProduct, 0)
 
 	db := t.db
 	id, err := getUserIdByEmail(db, userEmail)
@@ -151,7 +151,7 @@ func (t *transaction) GetMyTransactions(userEmail string) ([]entity.TransactionW
 
 func (t *transaction) GetAllTransactions() ([]entity.TransactionWithProductUser, error) {
 	var err error
-	var myTransactions []entity.TransactionWithProductUser
+	var myTransactions []entity.TransactionWithProductUser = make([]entity.TransactionWithProductUser, 0)
 
 	db := t.db
 	rows, err := db.Query(`SELECT * FROM transaction_history`)

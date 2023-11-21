@@ -61,7 +61,7 @@ func (t *transaction) Create(request dto.CreateTransactionRequest, userEmail str
 
 func toGetMyTransactionsResponse(entities []entity.TransactionWithProduct) []dto.GetTransactionResponse {
 	// var response dto.GetTransactionResponse
-	var myTransactions []dto.GetTransactionResponse
+	var myTransactions []dto.GetTransactionResponse = make([]dto.GetTransactionResponse, 0)
 
 	for _, entity := range entities {
 		var t dto.GetTransactionResponse
@@ -83,7 +83,7 @@ func toGetMyTransactionsResponse(entities []entity.TransactionWithProduct) []dto
 }
 
 func toGetAllTransactionsResponse(entities []entity.TransactionWithProductUser) []dto.GetAllTransactionResponse {
-	var myTransactions []dto.GetAllTransactionResponse
+	var myTransactions []dto.GetAllTransactionResponse = make([]dto.GetAllTransactionResponse, 0)
 
 	for _, entity := range entities {
 		var t dto.GetAllTransactionResponse
@@ -111,7 +111,7 @@ func toGetAllTransactionsResponse(entities []entity.TransactionWithProductUser) 
 }
 
 func (t *transaction) GetMyTransactions(email string) ([]dto.GetTransactionResponse, error) {
-	var myTransactions []dto.GetTransactionResponse
+	var myTransactions []dto.GetTransactionResponse = make([]dto.GetTransactionResponse, 0)
 	var err error
 	repo := t.repo
 	entities, err := repo.GetMyTransactions(email)
@@ -124,7 +124,7 @@ func (t *transaction) GetMyTransactions(email string) ([]dto.GetTransactionRespo
 }
 
 func (t *transaction) GetAllTransactions() ([]dto.GetAllTransactionResponse, error) {
-	var transactions []dto.GetAllTransactionResponse
+	var transactions []dto.GetAllTransactionResponse = make([]dto.GetAllTransactionResponse, 0)
 	var err error
 	repo := t.repo
 
