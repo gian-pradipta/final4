@@ -100,12 +100,20 @@ func (p *product) GetAll() ([]entity.Product, error) {
 func (p *product) Update(newProduct entity.Product, id int) (int, error) {
 	var err error
 	// fmt.Println(newProduct)
+	_, err = p.Get(id)
+	if err != nil {
+		return 0, err
+	}
 	_, err = p.db.Exec("UPDATE product SET title = ?, price = ?, stock = ?, category_id = ?, updated_at = ? WHERE id = ?", newProduct.Title, newProduct.Price, newProduct.Stock, newProduct.CategoryId, time.Now(), id)
 	return id, err
 }
 
 func (p *product) Delete(id int) error {
 	var err error
+	_, err = p.Get(id)
+	if err != nil {
+		return err
+	}
 	_, err = p.db.Exec("DELETE FROM product WHERE id = ?", id)
 	return err
 }

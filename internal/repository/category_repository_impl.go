@@ -37,7 +37,10 @@ func (c *category) Create(newCategory entity.Category) (int, error) {
 func (c *category) Update(newCategory entity.Category, id int) (int, error) {
 	var err error
 	db := c.db
-
+	_, err = c.Get(id)
+	if err != nil {
+		return 0, err
+	}
 	_, err = db.Exec("UPDATE category SET type = ?, updated_at = ? WHERE id = ?", newCategory.Type, time.Now(), id)
 
 	return id, err
@@ -94,6 +97,10 @@ func (c *category) GetAll() ([]entity.CategoryWithProduct, error) {
 func (c *category) Delete(id int) error {
 	var err error
 	db := c.db
+	_, err = c.Get(id)
+	if err != nil {
+		return err
+	}
 	_, err = db.Exec("DELETE FROM category WHERE id = ?", id)
 
 	return err
