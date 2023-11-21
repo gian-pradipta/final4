@@ -132,7 +132,7 @@ func (p *product) Delete(ctx *gin.Context) {
 	}
 	err = p.serv.Delete(id)
 	if err != nil {
-		err = errors.New("Failed to delete data")
+		err = errors.New("Failed deleting product: product may not exist")
 		goto ERROR_HANDLING
 	}
 ERROR_HANDLING:

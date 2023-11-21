@@ -127,6 +127,7 @@ func (c *category) Delete(ctx *gin.Context) {
 	}
 	err = serv.Delete(id)
 	if err != nil {
+		err = errors.New("Failed deleting category: category may not exist")
 		goto ERROR_HANDLING
 	}
 ERROR_HANDLING:

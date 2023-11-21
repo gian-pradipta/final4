@@ -55,6 +55,9 @@ func (c *category) Get(id int) (entity.Category, error) {
 	rows := db.QueryRow("SELECT * FROM category WHERE id = ?", id)
 
 	err = rows.Scan(&category.Id, &category.Type, &category.SoldProductAmount, &createdAt, &updatedAt)
+	if err != nil {
+		return category, err
+	}
 	category.CreatedAt, err = time.Parse("2006-01-02 15:04:05.9999999-07:00", createdAt)
 	category.UpdatedAt, err = time.Parse("2006-01-02 15:04:05.9999999-07:00", updatedAt)
 	return category, err

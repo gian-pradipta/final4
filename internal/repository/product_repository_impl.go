@@ -70,6 +70,9 @@ func (p *product) Get(id int) (entity.Product, error) {
 	rows := db.QueryRow("SELECT * FROM product WHERE id = ?", id)
 
 	err = rows.Scan(&product.Id, &product.Title, &product.Price, &product.Stock, &product.CategoryId, &createdAt, &updatedAt)
+	if err != nil {
+		return product, err
+	}
 	product.CreatedAt, err = time.Parse("2006-01-02 15:04:05.9999999-07:00", createdAt)
 	product.UpdatedAt, err = time.Parse("2006-01-02 15:04:05.9999999-07:00", updatedAt)
 	return product, err
